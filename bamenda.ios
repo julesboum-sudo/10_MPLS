@@ -1,0 +1,42 @@
+enable
+configure terminal
+hostname BAMENDA
+no ip domain lookup
+line console 0
+ exec-timeout 0 0
+ logging synchronous
+ exit
+
+int e0/2
+ ip address 5.5.5.7 255.255.255.240
+ description BAMENDA-----> MAROUA
+ no shutdown
+int e0/0
+ ip address 9.9.9.7 255.255.255.240
+ description BAMENDA -----> BUEA
+ no shutdown
+ exit
+int lo0
+ ip address 33.33.33.33 255.255.255.255
+ no shutdown
+ exit
+
+
+
+router ospf 7
+ network 5.5.5.0 0.0.0.15 area 0
+ network 9.9.9.0 0.0.0.15 area 0
+ network 33.33.33.33 0.0.0.0 area 0
+
+
+ip cef
+mpls label range 300 399
+mpls label protocol ldp
+mpls ldp router-id loopback0
+
+interface e0/2
+ mpls ip
+ exit
+interface e0/0
+ mpls ip
+ exit

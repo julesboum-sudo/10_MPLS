@@ -1,0 +1,40 @@
+enable
+configure terminal
+hostname YAOUNDE
+no ip domain lookup
+line console 0
+ exec-timeout 0 0
+ logging synchronous
+ exit
+
+int e0/1
+ ip address 6.6.6.3 255.255.255.240
+ description YAOUNDE -----> NGAOUNDERE
+ no shutdown
+int e0/0
+ ip address 2.2.2.3 255.255.255.240
+ description YAOUNDE -----> BERTOUA
+ no shutdown
+ exit
+int lo0
+ ip address 88.88.88.88 255.255.255.255
+ no shutdown
+ exit
+
+
+router ospf 3
+ network 2.2.2.0 0.0.0.15 area 0
+ network 6.6.6.0 0.0.0.15 area 0
+ network 88.88.88.88 0.0.0.0 area 0
+
+
+ip cef
+mpls label range 800 899
+mpls label protocol ldp
+mpls ldp router-id loopback0
+interface e0/0
+ mpls ip
+ exit
+interface e0/1
+ mpls ip
+ exit

@@ -1,0 +1,41 @@
+enable
+configure terminal
+hostname BERTOUA
+no ip domain lookup
+line console 0
+ exec-timeout 0 0
+ logging synchronous
+ exit
+
+
+int e0/1
+ ip address 2.2.2.10 255.255.255.240
+ description BERTOUA -----> YAOUNDE
+ no shutdown
+int e0/0
+ ip address 8.8.8.10 255.255.255.240
+ description BERTOUA -----> EBOLOWA
+ no shutdown
+ exit
+int lo0
+ ip address 99.99.99.99 255.255.255.255
+ no shutdown
+ exit
+
+
+router ospf 9
+ network 2.2.2.0 0.0.0.15 area 0
+ network 8.8.8.0 0.0.0.15 area 0
+ network 99.99.99.99 0.0.0.0 area 0
+
+
+ip cef
+mpls label range 900 999
+mpls label protocol ldp
+mpls ldp router-id loopback0
+interface e0/0
+ mpls ip
+ exit
+interface e0/1
+ mpls ip
+ exit

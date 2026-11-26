@@ -1,0 +1,42 @@
+enable
+configure terminal
+hostname EBOLOWA
+no ip domain lookup
+line console 0
+ exec-timeout 0 0
+ logging synchronous
+ exit
+
+int e0/1
+ ip address 8.8.8.5 255.255.255.240
+ description EBOLOWA -----> BERTOUA
+ no shutdown
+int e0/0
+ ip address 3.3.3.5 255.255.255.240
+ description EBOLOWA -----> DOUALA
+ no shutdown
+ exit
+int lo0
+ ip address 222.222.222.222 255.255.255.255
+ no shutdown
+ exit
+
+router ospf 10
+ network 8.8.8.0 0.0.0.15 area 0
+ network 3.3.3.0 0.0.0.15 area 0
+ network 222.222.222.222 0.0.0.0 area 0
+
+ip cef
+mpls label range 1000 1999
+mpls label protocol ldp
+mpls ldp router-id loopback0
+interface e0/0
+ mpls ip
+ exit
+interface e0/1
+ mpls ip
+ exit
+
+
+
+do show mpls forwarding-table

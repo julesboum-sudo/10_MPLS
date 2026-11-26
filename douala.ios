@@ -1,0 +1,34 @@
+enable
+configure terminal
+hostname DOUALA
+no ip domain lookup
+line console 0
+ exec-timeout 0 0
+ logging synchronous
+ exit
+
+int e0/2
+ ip address 3.3.3.2 255.255.255.240
+ description DOUALA -----> EBOLOWA
+ no shutdown
+int lo0
+ ip address 66.66.66.66 255.255.255.255
+ no shutdown
+ exit
+
+
+
+router ospf 8
+ network 66.66.66.66 0.0.0.0 area 0
+ network 3.3.3.0 0.0.0.15 area 0
+
+
+DOUALA(config)#
+ip cef
+mpls label range 600 699
+mpls label protocol ldp
+mpls ldp router-id loopback0
+interface e0/2
+ mpls ip
+ exit
+do wr
